@@ -1,0 +1,32 @@
+const form = document.getElementById('loginForm');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const errorMsg = document.querySelector('.error-msg');
+
+form.addEventListener('submit', login);
+
+function login(e){
+    e.preventDefault();
+
+    let obj = {
+        email: emailInput.value,
+        password: passwordInput.value
+    }
+
+    axios.post('http://localhost:3000/login', obj)
+    .then(response => {
+        alert(response.data.message);
+        //response.redirect('/expenses');
+        window.location.href = "../views/expense.html"
+    })
+    .catch(err => {
+        //alert(err.response.data.message);
+        showErrorOnScreen(err.response.data.message);
+    })
+}
+
+function showErrorOnScreen(msg) {
+    //console.log(msg);
+    errorMsg.innerHTML = `<p> ${msg} </p>`
+    setTimeout(() => errorMsg.remove(), 3000);
+}

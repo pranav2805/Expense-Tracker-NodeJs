@@ -15,7 +15,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 const userRoutes = require('./routes/user');
+const expRoutes = require('./routes/expRoute');
+
 app.use(userRoutes);
+app.use(expRoutes);
 
 sequelize.sync().then((result) => {
     app.listen(3000);

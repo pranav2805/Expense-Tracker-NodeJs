@@ -1,7 +1,6 @@
 const User = require('../models/user');
 
 const bcrypt = require('bcrypt');
-const { use } = require('../routes/user');
 
 function isStringInvalid(string) {
     if(string == undefined || string.length === 0)
@@ -19,15 +18,18 @@ exports.signup = async (req, res, next) => {
 
         const saltRounds = 10;
         bcrypt.hash(password, saltRounds, async (err, hash) => {
-            console.log(err);
+            if(err)
+                console.log(err);
+            try{
             const user = await User.create({username: username, email: email, password: hash});
-            res.status(200).json(user);
+            res.status(200).json({success: true, message: 'User has been created successfully!'});
+            } catch(err) {
+                if(err.message === 'Validation error')
+                    res.status(500).json({success: false, message: 'Email id already exists!'});
+            }
         })
     } catch(err) {
-        if(err.message === 'Validation error')
-            res.status(500).json({error: 'Email id already exists!'});
-        else
-            res.status(500).json({error: err.message});
+        res.status(500).json({error: err.message});
         // return res.status(500).json().then(body => {
         //     throw new Error(body.error)
         // })
@@ -48,8 +50,10 @@ exports.login = async (req, res, next) => {
             bcrypt.compare(password, user.password, (err, result) => {
                 if(err)
                     throw new Error('Something went wrong!');
-                if(result === true)
+                if(result === true){
                     res.status(200).json({success: true, message: 'User logged in successfully!'});
+                    //res.redirect('http://localhost:3000/expenses');
+                }
                 else
                     res.status(401).json({success: false, message: 'User not authorized!'});
             })
