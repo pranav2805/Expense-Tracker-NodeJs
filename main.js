@@ -9,7 +9,7 @@ form.addEventListener('submit', addUser);
 function addUser(e) {
     e.preventDefault();
     if(usernameInput.value==='' || emailInput.value==='' || passwordInput.value===''){
-        msg.classList.add('error');
+        //msg.classList.add('error');
         msg.innerHTML = 'Please fill all fields';
 
         setTimeout(() => msg.remove(), 3000);
