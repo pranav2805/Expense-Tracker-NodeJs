@@ -55,7 +55,7 @@ body {
     border-radius: 13px;
     outline: none;
   }
-  input[type="button"] {
+  /* input[type="button"] {
     width: 320px;
     height: 35px;
     margin-top: 20px;
@@ -63,7 +63,19 @@ body {
     background-color: #49c1a2;
     color: white;
     font-size: 18px;
+  } */
+
+  .btn {
+    width: 320px;
+    height: 35px;
+    margin-top: 20px;
+    border: none;
+    background-color: #49c1a2;
+    border-radius: 13px;
+    color: white;
+    font-size: 18px;
   }
+
   p {
     text-align: center;
     padding-top: 20px;
@@ -90,4 +102,10 @@ body {
     margin-top: -60px;
   }
   
+  .error{
+    background: orangered;
+    color: #fff;
+    padding: 5px;
+    margin: 5px;
+  }
   
