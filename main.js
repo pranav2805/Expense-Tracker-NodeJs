@@ -27,7 +27,7 @@ function addUser(e) {
                 alert("User has been created successfully");
             })
             .catch(err => {
-                alert(err);
+                alert(err.message);
                 // msg.classList.add('error');
                 // msg.innerHTML = 'Email id already exists!';
                 console.log(err);
