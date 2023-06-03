@@ -8,15 +8,16 @@ form.addEventListener('submit', login);
 function login(e){
     e.preventDefault();
 
-    let obj = {
+    let loginDetails = {
         email: emailInput.value,
         password: passwordInput.value
     }
 
-    axios.post('http://localhost:3000/login', obj)
+    axios.post('http://localhost:3000/login', loginDetails)
     .then(response => {
         alert(response.data.message);
         //response.redirect('/expenses');
+        localStorage.setItem('token', response.data.token);
         window.location.href = "../views/expense.html"
     })
     .catch(err => {

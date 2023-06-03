@@ -9,12 +9,16 @@ let tempId;
 form.addEventListener('submit', addExpense);
 
 window.addEventListener('DOMContentLoaded', () => {
-    axios.get('http://localhost:3000/expenses')
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:3000/expenses', {headers: {"Authorization": token} })
         .then(response => {
             // console.log(response.data);
             for(let i=0;i<response.data.length;i++){
                 showExpenseOnScreen(response.data[i]);
             }
+            // response.data.expenses.forEach(expense => {
+            //     showExpenseOnScreen(expense);
+            // })
         })
         .catch(err => {
             console.log(err);
@@ -23,21 +27,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function addExpense(e){
     e.preventDefault();
-
-    let obj = {
+    const token = localStorage.getItem('token');
+    let expenseDetails = {
         amount: amountInput.value,
         description: descInput.value,
         category: categoryInput.value
     }
     if(editFlag === true){
-        axios.put('http://localhost:3000/expenses/edit-expense/'+tempId, obj)
+        axios.put('http://localhost:3000/expenses/edit-expense/'+tempId, expenseDetails, {headers: {"Authorization": token} })
             .then(response => {
-                showExpenseOnScreen({...obj, id: tempId});
+                showExpenseOnScreen({...expenseDetails, id: tempId});
                 editFlag = false;
             })
             .catch(err => console.log(err))
     } else{
-        axios.post('http://localhost:3000/expenses', obj)
+        axios.post('http://localhost:3000/expenses', expenseDetails, {headers: {"Authorization": token} })
             .then(response => {
                 showExpenseOnScreen(response.data);
             })
@@ -73,8 +77,9 @@ function showExpenseOnScreen(obj) {
 function deleteExpense(id) {
     const parentElement = document.getElementById('expenses');
     const childElement = document.getElementById(id);
+    const token = localStorage.getItem('token');
     //console.log(id);
-    axios.delete(`http://localhost:3000/expenses/${id}`)
+    axios.delete(`http://localhost:3000/expenses/${id}`, {headers: {"Authorization": token} })
         .then(response => {
             console.log('Deletion was successful!!');
             parentElement.removeChild(childElement);
