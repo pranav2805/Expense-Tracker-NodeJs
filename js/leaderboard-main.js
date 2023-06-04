@@ -14,8 +14,8 @@ window.addEventListener('DOMContentLoaded', () => {
 function showUserOnLeaderboard(obj) {
     const childHTML = `<li id=${obj.id}>
                         <div class="row">
-                            <div class="col-lg-3">${obj.name}</div>
-                            <div class="col-lg-3">${obj.totalExpenses}</div>
+                            <div class="col-lg-3">${obj.username}</div>
+                            <div class="col-lg-3">${obj.total_expenses}</div>
                         <div>
                        </li>`
     
