@@ -10,8 +10,8 @@ function isStringInvalid(string) {
         return false;
 }
 
-function generateToken(id, name){
-    return jwt.sign({userId: id, name: name}, process.env.SECRET_TOKEN);
+function generateToken(id, name, isPremiumUser){
+    return jwt.sign({userId: id, name: name, isPremiumUser}, process.env.SECRET_TOKEN);
 }
 
 exports.signup = async (req, res, next) => {
@@ -56,7 +56,7 @@ exports.login = async (req, res, next) => {
                 if(err)
                     throw new Error('Something went wrong!');
                 if(result === true){
-                    res.status(200).json({success: true, message: 'User logged in successfully!', token: generateToken(user.id, user.username), user: user});
+                    res.status(200).json({success: true, message: 'User logged in successfully!', token: generateToken(user.id, user.username, user.isPremiumUser)});
                 }
                 else
                     res.status(401).json({success: false, message: 'User not authorized!'});

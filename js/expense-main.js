@@ -10,17 +10,36 @@ let tempId;
 
 form.addEventListener('submit', addExpense);
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+function showPremiumFeatures(isPremiumUser) {
+    const premiumDiv = document.getElementById('premiumDiv');
+    if(isPremiumUser === true){
+        premiumDiv.innerHTML = `<p><b>You're a premium user</b></p>
+                                <a href="leaderboard.html"><button onclick="showLeaderboard()" class="btn btn-primary float-right">Show Leaderboard</button></a>`
+    } else{
+        premiumDiv.innerHTML = `<button onclick="buyPremium()" class="btn btn-primary float-right ">Buy Premium</button>`
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
+    const decodedToken = parseJwt(token);
+    console.log(decodedToken);
+    showPremiumFeatures(decodedToken.isPremiumUser);
+
     axios.get('http://localhost:3000/expenses', {headers: {"Authorization": token} })
         .then(response => {
             // console.log(response.data);
-            const premiumDiv = document.getElementById('premiumDiv');
-            if(response.data.user.isPremiumUser === true){
-                premiumDiv.innerHTML = `<p><b>You're a premium user</b></p>`
-            } else{
-                premiumDiv.innerHTML = `<button onclick="buyPremium()" class="btn btn-primary float-right ">Buy Premium</button>`
-            }
+            
             for(let i=0;i<response.data.length;i++){
                 showExpenseOnScreen(response.data[i]);
             }
@@ -52,6 +71,7 @@ async function buyPremium(){
             }, {headers: {"Authorization": token} })
 
             alert('You are a Premium User Now!')
+            showPremiumFeatures(true);
         },
     };
     const rzp1 = new Razorpay(options);
@@ -141,4 +161,8 @@ function editExpense(id, amount, category, description) {
     descInput.value = description;
     editFlag = true;
     tempId = id;
+}
+
+function showLeaderboard() {
+
 }

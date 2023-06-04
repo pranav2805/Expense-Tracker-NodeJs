@@ -27,8 +27,10 @@ dotenv.config();
 const userRoutes = require('./routes/user');
 const expRoutes = require('./routes/expRoute');
 const purchaseRoutes = require('./routes/purchase');
+const premiumRoutes = require('./routes/premium');
 
 app.use('/purchase', purchaseRoutes);
+app.use('/premium', premiumRoutes);
 app.use(userRoutes);
 app.use(expRoutes);
 
