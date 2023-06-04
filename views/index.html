@@ -20,48 +20,37 @@
   </header>
   <div class="container">
    <div id="main" class="card card-body">
-    <div>
-      <h2 class="title">Add Expense</h2>
-      <!-- <button id="rzp-button" class="btn btn-primary float-right ">Buy Premium</button> -->
-      <div id="premiumDiv" class="float-lg-right"></div>
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    </div>
-    <form id="addForm" class="form-inline mb-3" action="/expenses" method="POST">
-        <div style="float:left;margin-right:20px;">
-            <label for="amount">Choose expense amount:</label>
+    <h2 class="title">Add Expense</h2>
+    <form id="addForm" action="/expenses" method="POST">
+        <div>
+            <label for="amount">Choose expense amount:</label><br>
             <input type="number" id="amount" name="amount">
         </div>
-        <div style="float:left;margin-right:20px;">
-            <label for="description">Choose description:</label>
+        <div>
+            <label for="description">Choose description:</label><br>
             <input type="text" id="description" name="description">
         </div>
-        <div style="float:left;margin-right:20px;">
-            <label for="category">Choose a category:</label>
+        <div>
+            <label for="category">Choose a category:</label><br>
             <select name="category" id="category" name="category">
                 <option value="fuel">Fuel</option>
                 <option value="food">Food</option>
                 <option value="electricity">Electricity</option>
                 <option value="movie">Movie</option>
-                <option value="salary">Salary</option>
             </select>
         </div>
         <br>
-      <button type="submit" class="btn btn-dark float-right ml-5">Add expense</button>
+      <button type="submit" class="btn btn-dark">Add expense</button>
     </form>
     <br>
     <h2 class="title">Expenses</h2>
-    <div class="row">
-      <div class="col-lg-3"><h5>Amount</h5></div>
-      <div class="col-lg-3"><h5>Description</h5></div>
-      <div class="col-lg-3"><h5>Category</h5></div>
-    </div>
     <ul id="expenses" class="list-group"></ul>
     </ul>
    </div>
   </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-<script src="../js/expense-main.js"></script>
+<script src="main.js"></script>
 
 </body>
 </html>

@@ -1,3 +1,5 @@
+//const Razorpay = require('razorpay');
+
 const form = document.getElementById('addForm');
 const amountInput = document.getElementById('amount');
 const descInput = document.getElementById('description');
@@ -13,6 +15,12 @@ window.addEventListener('DOMContentLoaded', () => {
     axios.get('http://localhost:3000/expenses', {headers: {"Authorization": token} })
         .then(response => {
             // console.log(response.data);
+            const premiumDiv = document.getElementById('premiumDiv');
+            if(response.data.user.isPremiumUser === true){
+                premiumDiv.innerHTML = `<p><b>You're a premium user</b></p>`
+            } else{
+                premiumDiv.innerHTML = `<button onclick="buyPremium()" class="btn btn-primary float-right ">Buy Premium</button>`
+            }
             for(let i=0;i<response.data.length;i++){
                 showExpenseOnScreen(response.data[i]);
             }
@@ -24,6 +32,42 @@ window.addEventListener('DOMContentLoaded', () => {
             console.log(err);
         })
 })
+
+//document.getElementById('rzp-button').onclick = async function (e) {
+async function buyPremium(){
+    //e.preventDefault;
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://localhost:3000/purchase/premiumMembership', {headers: {"Authorization": token} });
+    console.log("response from premiummembership route >>>"+response);
+    var options = 
+    {
+        "key": response.data.key_id,
+        "order_id": response.data.order.id,
+        //his handler function will handle the success payment
+        "handler": async function (response) {
+            await axios.post('http://localhost:3000/purchase/updateTransactionStatus',{
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+                success: true
+            }, {headers: {"Authorization": token} })
+
+            alert('You are a Premium User Now!')
+        },
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+    //e.preventDefault();
+
+    rzp1.on('payment.failed', async function (response){
+        console.log(response);
+        const result = await axios.post('http://localhost:3000/purchase/updateTransactionStatus',{
+            order_id: options.order_id,
+            success: false
+        }, {headers: {"Authorization": token} })
+        alert('Something went wrong!!');
+        alert(result.data.error);
+    });
+}
 
 function addExpense(e){
     e.preventDefault();

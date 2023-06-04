@@ -102,10 +102,10 @@ body {
     margin-top: -60px;
   }
   
-  .error{
-    background: orangered;
-    color: #fff;
-    padding: 5px;
-    margin: 5px;
+  .error-msg{
+    text-align: center;
+    color: rgb(225, 29, 29);
+    font-size: 15px;
+    margin-top: -10px;
   }
   

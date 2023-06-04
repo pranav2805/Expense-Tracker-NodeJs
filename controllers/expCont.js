@@ -2,9 +2,9 @@ const Expense = require('../models/expense');
 
 exports.getExpenses = async (req, res, next) => {
     try {
-        //const expenses = await req.user.getExpenses();
-        const expenses = await Expense.findAll();
-        res.status(200).json(expenses);
+        const expenses = await req.user.getExpenses();
+        //const expenses = await Expense.findAll();
+        res.status(200).json({expenses: expenses, user: req.user});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
