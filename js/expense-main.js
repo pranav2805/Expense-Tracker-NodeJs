@@ -64,13 +64,15 @@ async function buyPremium(){
         "order_id": response.data.order.id,
         //his handler function will handle the success payment
         "handler": async function (response) {
-            await axios.post('http://localhost:3000/purchase/updateTransactionStatus',{
+            const result = await axios.post('http://localhost:3000/purchase/updateTransactionStatus',{
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id,
                 success: true
             }, {headers: {"Authorization": token} })
 
             alert('You are a Premium User Now!')
+            // showPremiumFeatures(true);
+            localStorage.setItem('token', result.data.token);
             showPremiumFeatures(true);
         },
     };
