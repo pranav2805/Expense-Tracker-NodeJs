@@ -8,6 +8,7 @@ const sequelize = require('./util/database');
 const User = require('./models/user');
 const Expense = require('./models/expense');
 const Order = require('./models/order');
+const Forgotpassword = require('./models/forgotpassword');
 
 const app = express();
 app.use(cors());
@@ -17,6 +18,9 @@ Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(Forgotpassword);
+Forgotpassword.belongsTo(User);
 
 // Middlewares
 app.use(bodyParser.json());
@@ -28,11 +32,13 @@ const userRoutes = require('./routes/user');
 const expRoutes = require('./routes/expRoute');
 const purchaseRoutes = require('./routes/purchase');
 const premiumRoutes = require('./routes/premium');
+const resetpasswordRoutes = require('./routes/resetpassword');
 
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use(userRoutes);
 app.use(expRoutes);
+app.use('/password', resetpasswordRoutes);
 
 //app.use(errorController.get404);
 
