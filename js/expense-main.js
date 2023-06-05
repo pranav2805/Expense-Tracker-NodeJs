@@ -38,10 +38,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     axios.get('http://localhost:3000/expenses', {headers: {"Authorization": token} })
         .then(response => {
-            // console.log(response.data);
+            console.log(response.data.expenses);
             
-            for(let i=0;i<response.data.length;i++){
-                showExpenseOnScreen(response.data[i]);
+            for(let i=0;i<response.data.expenses.length;i++){
+                showExpenseOnScreen(response.data.expenses[i]);
             }
             // response.data.expenses.forEach(expense => {
             //     showExpenseOnScreen(expense);
