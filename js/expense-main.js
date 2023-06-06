@@ -24,7 +24,9 @@ function showPremiumFeatures(isPremiumUser) {
     const premiumDiv = document.getElementById('premiumDiv');
     if(isPremiumUser === true){
         premiumDiv.innerHTML = `<p><b>You're a premium user</b></p>
-                                <a href="leaderboard.html"><button onclick="showLeaderboard()" class="btn btn-primary float-right">Show Leaderboard</button></a>`
+                                <a href="leaderboard.html"><button class="btn btn-primary float-right ml-2">Show Leaderboard</button></a>
+                                <button onclick="downloadExpense()" class="btn btn-primary float-right ml-2">Download</button>
+                                <button onclick="getDownloadedFiles()" class="btn btn-primary float-right">Downloaded files</button>`
     } else{
         premiumDiv.innerHTML = `<button onclick="buyPremium()" class="btn btn-primary float-right ">Buy Premium</button>`
     }
@@ -165,6 +167,47 @@ function editExpense(id, amount, category, description) {
     tempId = id;
 }
 
-function showLeaderboard() {
+async function downloadExpense() {
+    try{
+        const token = localStorage.getItem('token');
+        const result = await axios.get('http://localhost:3000/expenses/download', {headers: {"Authorization": token} });
+        if(result.status === 200) {
+            var a = document.createElement('a');
+            a.href = result.data.fileURL;
+            a.download = 'myexpense.csv';
+            a.click();
+        } else{
+            throw new Error(result.data.message);
+        }
+    } catch(err){
+        console.log(err);
+    }
+}
 
+async function getDownloadedFiles() {
+    try{
+        const token = localStorage.getItem('token');
+        const result = await axios.get('http://localhost:3000/expenses/downloadFiles', {headers: {"Authorization": token} });
+        if(result.status === 200) {
+            for(let i=0;i<result.data.userFiles.length;i++){
+                console.log(result.data.userFiles[i]);
+                showDownloadedFiles(result.data.userFiles[i]);
+            }
+        } else{
+            throw new Error(result.data.message);
+        }
+    } catch(err){
+        console.log(err);
+    }
+}
+
+function showDownloadedFiles (obj) {
+    const parentElement = document.getElementById('downloaded');
+    const childElement = `<li class="list-group-item"> 
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    ${obj.URL} 
+                            </div>
+                          </li>`
+    parentElement.innerHTML = parentElement.innerHTML + childElement;
 }

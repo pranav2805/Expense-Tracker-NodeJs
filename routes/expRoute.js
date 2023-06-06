@@ -9,6 +9,10 @@ router.get('/expenses', userAuthentication.authenticate, expenseController.getEx
 
 router.post('/expenses', userAuthentication.authenticate, expenseController.postExpense);
 
+router.get('/expenses/download', userAuthentication.authenticate, expenseController.downloadExpense);
+
+router.get('/expenses/downloadFiles',  userAuthentication.authenticate, expenseController.getDownloadedFiles);
+
 router.delete('/expenses/:id', userAuthentication.authenticate, expenseController.deleteExpense);
 
 router.put('/expenses/edit-expense/:id', expenseController.editExpense);

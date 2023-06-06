@@ -1,6 +1,62 @@
+const { response } = require('express');
 const Expense = require('../models/expense');
 const User = require('../models/user');
+const downloadedFile = require('../models/downloadedfile');
 const sequelize = require('../util/database');
+const UserServices = require('../services/userservices');
+const S3Services = require('../services/s3services');
+
+// function uploadToS3(data, filename) {
+//     let s3Bucket = new AWS.S3({
+//         accessKeyId: process.env.IAM_USER_KEY,
+//         secretAccessKey: process.env.IAM_USER_SECRET,
+//     })
+
+//     var params = {
+//         Bucket: process.env.BUCKET_NAME,
+//         Key: filename,
+//         Body: data,
+//         ACL: 'public-read'
+//     }
+
+//     return new Promise((resolve, reject) => {
+//         s3Bucket.upload(params, (err, response) => {
+//             if(err){
+//                 console.log('Something went wrong ',err);
+//                 reject(err);
+//             } else{
+//                 // console.log('success', response);
+//                 resolve(response.Location);
+//             }
+//         })
+//     })
+
+// }
+
+exports.downloadExpense = async (req, res) => {
+    try{
+        const expenses = await UserServices.getExpenses(req);
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const filename = `Expense${req.user.id}/${new Date()}.txt`;
+
+        const fileURL = await S3Services.uploadToS3(stringifiedExpenses, filename);
+        await req.user.createDownloadedFile({URL: fileURL});
+        res.status(200).json({fileURL, success: true});
+    } catch(err){
+        console.log(err);
+        res.status(500).json({success: false, err: err})
+    }
+}
+
+exports.getDownloadedFiles = async (req, res) => {
+    try{
+        const userFiles = await req.user.getDownloadedFiles();
+        res.status(200).json({success: true, userFiles: userFiles});
+    } catch(err){
+        console.log(err);
+        res.status(500).json({success: false, err: err});
+    }
+}
 
 exports.getExpenses = async (req, res, next) => {
     try {

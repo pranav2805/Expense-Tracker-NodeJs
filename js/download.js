@@ -16,6 +16,6 @@ function download(){
 
     })
     .catch((err) => {
-        showError(err)
+        console.log(err);
     });
 }
