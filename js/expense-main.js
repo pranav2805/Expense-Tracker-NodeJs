@@ -6,12 +6,18 @@ const descInput = document.getElementById('description');
 const categoryInput = document.getElementById('category');
 const expenseList = document.getElementById('expenses');
 const pagination = document.getElementById('pagination');
+
 let editFlag = false;
 let tempId;
 
 const token = localStorage.getItem('token');
 
 form.addEventListener('submit', addExpense);
+
+function savePageSize(){
+    const pageSize = document.getElementById('pageSize');
+    localStorage.setItem('rows', pageSize.value);
+}
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -41,10 +47,11 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log(decodedToken);
     showPremiumFeatures(decodedToken.isPremiumUser);
     const page = 1;
+    const pageSize = localStorage.getItem('rows');
     expenseList.innerHTML = '';
     pagination.innerHTML = '';
 
-    axios.get(`http://localhost:3000/expenses?page=${page}`, {headers: {"Authorization": token} })
+    axios.get(`http://localhost:3000/expenses?page=${page}&pageSize=${pageSize}`, {headers: {"Authorization": token} })
         .then(response => {
             //console.log(response.data.expenses);
             
@@ -180,9 +187,10 @@ function showPagination({
 }
 
 function getExpenses(page) {
+    const pageSize = localStorage.getItem('rows');
     expenseList.innerHTML = '';
     pagination.innerHTML = '';
-    axios.get(`http://localhost:3000/expenses?page=${page}`, {headers: {"Authorization": token} })
+    axios.get(`http://localhost:3000/expenses?page=${page}&pageSize=${pageSize}`, {headers: {"Authorization": token} })
     .then(response => {
         for(let i=0;i<response.data.expenses.length;i++){
             showExpenseOnScreen(response.data.expenses[i]);

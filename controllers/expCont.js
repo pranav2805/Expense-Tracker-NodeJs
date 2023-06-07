@@ -6,6 +6,8 @@ const sequelize = require('../util/database');
 const UserServices = require('../services/userservices');
 const S3Services = require('../services/s3services');
 
+// const ITEMS_PER_PAGE = 3;
+
 // function uploadToS3(data, filename) {
 //     let s3Bucket = new AWS.S3({
 //         accessKeyId: process.env.IAM_USER_KEY,
@@ -61,19 +63,21 @@ exports.getDownloadedFiles = async (req, res) => {
 exports.getExpenses = async (req, res, next) => {
     try {
         const page = +req.query.page || 1;
+        const ITEMS_PER_PAGE = Number(req.query.pageSize);
+        //console.log(typeof(ITEMS_PER_PAGE));
         const totalItems = await Expense.count({where: {userId: req.user.id}});
         const expenses = await req.user.getExpenses({
-            offset: (page - 1) * 3,
-            limit: 3
+            offset: (page - 1) * ITEMS_PER_PAGE,
+            limit: ITEMS_PER_PAGE
         });
         res.status(200).json({
             expenses: expenses,
             currentPage: page,
-            hasNextPage: 3 * page < totalItems,
+            hasNextPage: ITEMS_PER_PAGE * page < totalItems,
             nextPage: page + 1,
             hasPreviousPage: page > 1,
             previousPage: page - 1,
-            lastPage: Math.ceil(totalItems / 3),
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
