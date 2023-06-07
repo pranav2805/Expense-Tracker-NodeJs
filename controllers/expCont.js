@@ -60,9 +60,21 @@ exports.getDownloadedFiles = async (req, res) => {
 
 exports.getExpenses = async (req, res, next) => {
     try {
-        const expenses = await req.user.getExpenses();
-        //const expenses = await Expense.findAll();
-        res.status(200).json({expenses: expenses, user: req.user});
+        const page = +req.query.page || 1;
+        const totalItems = await Expense.count({where: {userId: req.user.id}});
+        const expenses = await req.user.getExpenses({
+            offset: (page - 1) * 3,
+            limit: 3
+        });
+        res.status(200).json({
+            expenses: expenses,
+            currentPage: page,
+            hasNextPage: 3 * page < totalItems,
+            nextPage: page + 1,
+            hasPreviousPage: page > 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalItems / 3),
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

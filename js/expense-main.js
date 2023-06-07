@@ -5,8 +5,11 @@ const amountInput = document.getElementById('amount');
 const descInput = document.getElementById('description');
 const categoryInput = document.getElementById('category');
 const expenseList = document.getElementById('expenses');
+const pagination = document.getElementById('pagination');
 let editFlag = false;
 let tempId;
+
+const token = localStorage.getItem('token');
 
 form.addEventListener('submit', addExpense);
 
@@ -37,10 +40,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const decodedToken = parseJwt(token);
     console.log(decodedToken);
     showPremiumFeatures(decodedToken.isPremiumUser);
+    const page = 1;
+    expenseList.innerHTML = '';
+    pagination.innerHTML = '';
 
-    axios.get('http://localhost:3000/expenses', {headers: {"Authorization": token} })
+    axios.get(`http://localhost:3000/expenses?page=${page}`, {headers: {"Authorization": token} })
         .then(response => {
-            console.log(response.data.expenses);
+            //console.log(response.data.expenses);
             
             for(let i=0;i<response.data.expenses.length;i++){
                 showExpenseOnScreen(response.data.expenses[i]);
@@ -48,6 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
             // response.data.expenses.forEach(expense => {
             //     showExpenseOnScreen(expense);
             // })
+            showPagination(response.data);
         })
         .catch(err => {
             console.log(err);
@@ -142,6 +149,51 @@ function showExpenseOnScreen(obj) {
     parentElement.innerHTML = parentElement.innerHTML + childHTML;
 }
 
+function showPagination({
+    currentPage,
+    hasNextPage,
+    nextPage,
+    hasPreviousPage,
+    previousPage,
+    lastPage,
+}) {
+    showPagination.innerHTML = '';
+
+    if(hasPreviousPage) {
+        const btn2 = document.createElement('button');
+        btn2.innerHTML = previousPage;
+        btn2.addEventListener("click", () => getExpenses(previousPage))
+        pagination.appendChild(btn2);
+    }
+
+    const btn1 = document.createElement('button');
+    btn1.innerHTML = `<h3>${currentPage}</h3>`;
+    btn1.addEventListener("click", () => getExpenses(currentPage))
+    pagination.appendChild(btn1);
+
+    if(hasNextPage) {
+        const btn3 = document.createElement('button');
+        btn3.innerHTML = nextPage;
+        btn3.addEventListener("click", () => getExpenses(nextPage))
+        pagination.appendChild(btn3);
+    }
+}
+
+function getExpenses(page) {
+    expenseList.innerHTML = '';
+    pagination.innerHTML = '';
+    axios.get(`http://localhost:3000/expenses?page=${page}`, {headers: {"Authorization": token} })
+    .then(response => {
+        for(let i=0;i<response.data.expenses.length;i++){
+            showExpenseOnScreen(response.data.expenses[i]);
+        }
+        showPagination(response.data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
 function deleteExpense(id) {
     const parentElement = document.getElementById('expenses');
     const childElement = document.getElementById(id);
@@ -186,12 +238,14 @@ async function downloadExpense() {
 
 async function getDownloadedFiles() {
     try{
+        const parentElement = document.getElementById('downloaded');
+        parentElement.innerHTML = '';
         const token = localStorage.getItem('token');
         const result = await axios.get('http://localhost:3000/expenses/downloadFiles', {headers: {"Authorization": token} });
         if(result.status === 200) {
             for(let i=0;i<result.data.userFiles.length;i++){
                 console.log(result.data.userFiles[i]);
-                showDownloadedFiles(result.data.userFiles[i]);
+                showDownloadedFiles(result.data.userFiles[i], i+1);
             }
         } else{
             throw new Error(result.data.message);
@@ -201,12 +255,13 @@ async function getDownloadedFiles() {
     }
 }
 
-function showDownloadedFiles (obj) {
+function showDownloadedFiles (obj, num) {
     const parentElement = document.getElementById('downloaded');
     const childElement = `<li class="list-group-item"> 
                             <div class="row">
                                 <div class="col-lg-3">
-                                    ${obj.URL} 
+                                    <a href='${obj.URL}'> File ${num}</a>
+                                </div>
                             </div>
                           </li>`
     parentElement.innerHTML = parentElement.innerHTML + childElement;
